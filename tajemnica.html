@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔒</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #2a2a3a;
+    --accent: #c084fc;
+    --accent2: #f0abfc;
+    --text: #f1f0ff;
+    --muted: #6b6b80;
+  }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Background glow blobs */
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::before {
+    width: 500px; height: 500px;
+    background: #c084fc;
+    top: -150px; left: -150px;
+  }
+  body::after {
+    width: 400px; height: 400px;
+    background: #818cf8;
+    bottom: -100px; right: -100px;
+  }
+
+  /* ── LOCK SCREEN ── */
+  #lock-screen {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    animation: fadeIn .5s ease;
+  }
+
+  .lock-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 16px rgba(192,132,252,.5));
+  }
+
+  .lock-title {
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    color: var(--muted);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .input-wrap {
+    position: relative;
+    width: min(320px, 90vw);
+  }
+
+  .input-wrap input {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1.05rem;
+    outline: none;
+    transition: border-color .25s;
+    text-align: center;
+    letter-spacing: .04em;
+  }
+  .input-wrap input::placeholder { color: var(--muted); }
+  .input-wrap input:focus { border-color: var(--accent); }
+
+  .btn {
+    width: min(320px, 90vw);
+    padding: 14px;
+    background: linear-gradient(135deg, #9333ea, #c084fc);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s;
+    box-shadow: 0 0 30px rgba(192,132,252,.25);
+  }
+  .btn:hover { opacity: .9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .error-msg {
+    font-size: .9rem;
+    color: #f87171;
+    min-height: 1.2em;
+    text-align: center;
+    animation: shake .35s ease;
+  }
+
+  /* ── REVEAL SCREEN ── */
+  #reveal-screen {
+    display: none;
+    position: relative;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+    padding: 24px;
+    animation: popIn .6s cubic-bezier(.22,.68,0,1.4) forwards;
+  }
+
+  .emoji-burst {
+    font-size: 3rem;
+    animation: spin .5s ease;
+  }
+
+  .reveal-text {
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #f0abfc, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(192,132,252,.4));
+  }
+
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .piece {
+    position: absolute;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: fall linear forwards;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)}
+    60%{transform:translateX(-6px)}
+    80%{transform:translateX(6px)}
+  }
+  @keyframes popIn {
+    from { opacity:0; transform:scale(.7); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  @keyframes spin { from{transform:rotate(-20deg) scale(.5)} to{transform:rotate(0) scale(1)} }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOCK -->
+<div id="lock-screen">
+  <div class="lock-icon">🔒</div>
+  <div class="lock-title">Podaj hasło, żeby zobaczyć</div>
+  <div class="input-wrap">
+    <input id="pwd" type="text" placeholder="hasło..." autocomplete="off" />
+  </div>
+  <button class="btn" onclick="check()">Odblokuj</button>
+  <div class="error-msg" id="err"></div>
+</div>
+
+<!-- REVEAL -->
+<div id="reveal-screen">
+  <div class="emoji-burst">🎉</div>
+  <div class="reveal-text">to nie było<br>wszystko<br>hahahah</div>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+  const input = document.getElementById('pwd');
+
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+
+  function check() {
+    const val = input.value.trim().toLowerCase();
+    const err = document.getElementById('err');
+
+    if (val === '14 maj') {
+      document.getElementById('lock-screen').style.display = 'none';
+      const rev = document.getElementById('reveal-screen');
+      rev.style.display = 'flex';
+      spawnConfetti();
+    } else {
+      err.textContent = '';
+      void err.offsetWidth; // reflow for re-trigger animation
+      err.style.animation = 'none';
+      void err.offsetWidth;
+      err.style.animation = '';
+      err.textContent = 'Złe hasło! Spróbuj jeszcze raz 🙃';
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  function spawnConfetti() {
+    const colors = ['#c084fc','#f0abfc','#818cf8','#fbbf24','#34d399','#f87171'];
+    const container = document.getElementById('confetti');
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement('div');
+      p.className = 'piece';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.width = (6 + Math.random() * 8) + 'px';
+      p.style.height = (6 + Math.random() * 8) + 'px';
+      p.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+      p.style.animationDuration = (1.2 + Math.random() * 2) + 's';
+      p.style.animationDelay = (Math.random() * .8) + 's';
+      container.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+</script>
+</body>
+</html>
