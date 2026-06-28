@@ -181,6 +181,43 @@
     animation: fadeIn 1s ease .4s both;
   }
 
+  /* ── MUSIC PLAYER ── */
+  .music-player {
+    display:flex; align-items:center; gap:14px;
+    background:#13131a; border:1.5px solid #2a2a3a; border-radius:50px;
+    padding:10px 20px 10px 10px;
+    animation: fadeIn 1s ease .8s both;
+  }
+  .music-play-btn {
+    width:42px; height:42px; border-radius:50%;
+    background:linear-gradient(135deg,#ff6b9d,#ff8fab);
+    border:none; cursor:pointer; font-size:1.2rem;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition:transform .15s, filter .15s;
+    box-shadow:0 0 16px rgba(255,107,157,.35);
+  }
+  .music-play-btn:hover { transform:scale(1.08); filter:brightness(1.1); }
+  .music-play-btn:active { transform:scale(.95); }
+  .music-info { display:flex; flex-direction:column; gap:2px; }
+  .music-name { font-size:.82rem; font-weight:600; color:#f1f0ff; letter-spacing:.02em; }
+  .music-status { font-size:.72rem; color:#6b6b80; letter-spacing:.04em; }
+  .volume-wrap { display:flex; align-items:center; gap:8px; margin-left:4px; }
+  .vol-icon { font-size:.9rem; color:#6b6b80; cursor:pointer; user-select:none; }
+  input[type=range].vol-slider {
+    -webkit-appearance:none; appearance:none;
+    width:80px; height:4px; border-radius:2px;
+    background:linear-gradient(to right,#ff6b9d 60%,#2a2a3a 60%);
+    outline:none; cursor:pointer; border:none; padding:0;
+  }
+  input[type=range].vol-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; width:14px; height:14px;
+    border-radius:50%; background:#ff6b9d; cursor:pointer;
+  }
+  input[type=range].vol-slider::-moz-range-thumb {
+    width:14px; height:14px; border-radius:50%; background:#ff6b9d; border:none; cursor:pointer;
+  }
+
   /* confetti */
   .confetti-container { position:fixed;inset:0;pointer-events:none;z-index:99; }
   .piece { position:absolute;top:-10px;border-radius:2px;animation:fall linear forwards; }
@@ -269,10 +306,24 @@
 </div>
 
 <!-- FINALE SCREEN -->
+<audio id="bgMusic" src="muzyka.mp3" loop preload="auto"></audio>
+
 <div id="finale-screen" class="screen">
   <div class="finale-emoji">✨</div>
   <div class="finale-text">ciąg dalszy<br>nastąpi...</div>
   <div class="finale-sub">zostań na bieżąco 😉</div>
+
+  <div class="music-player">
+    <button class="music-play-btn" id="playBtn" onclick="toggleMusic()">▶️</button>
+    <div class="music-info">
+      <div class="music-name">🎵 muzyka.mp3</div>
+      <div class="music-status" id="musicStatus">zatrzymana</div>
+    </div>
+    <div class="volume-wrap">
+      <span class="vol-icon" id="volIcon" onclick="toggleMute()">🔊</span>
+      <input type="range" class="vol-slider" id="volSlider" min="0" max="1" step="0.01" value="0.6" oninput="setVolume(this.value)" />
+    </div>
+  </div>
 </div>
 
 <div class="confetti-container" id="confetti"></div>
@@ -374,6 +425,60 @@
       showScreen('finale-screen');
       spawnConfetti();
     }, 520);
+  }
+
+  // ── MUSIC ──
+  const music = document.getElementById('bgMusic');
+  let muted = false;
+  let lastVol = 0.6;
+  music.volume = 0.6;
+
+  function toggleMusic(){
+    const btn = document.getElementById('playBtn');
+    const status = document.getElementById('musicStatus');
+    if(music.paused){
+      music.play().catch(()=>{});
+      btn.textContent = '⏸️';
+      status.textContent = 'gra ♪';
+    } else {
+      music.pause();
+      btn.textContent = '▶️';
+      status.textContent = 'zatrzymana';
+    }
+  }
+
+  function setVolume(val){
+    music.volume = val;
+    lastVol = val;
+    muted = false;
+    updateVolIcon(val);
+    // update slider gradient
+    const pct = val * 100;
+    document.getElementById('volSlider').style.background =
+      `linear-gradient(to right,#ff6b9d ${pct}%,#2a2a3a ${pct}%)`;
+  }
+
+  function toggleMute(){
+    if(muted){
+      music.volume = lastVol;
+      document.getElementById('volSlider').value = lastVol;
+      setVolume(lastVol);
+      muted = false;
+    } else {
+      lastVol = music.volume;
+      music.volume = 0;
+      document.getElementById('volSlider').value = 0;
+      document.getElementById('volIcon').textContent = '🔇';
+      document.getElementById('volSlider').style.background = 'linear-gradient(to right,#ff6b9d 0%,#2a2a3a 0%)';
+      muted = true;
+    }
+  }
+
+  function updateVolIcon(val){
+    const icon = document.getElementById('volIcon');
+    if(val === 0 || muted) icon.textContent = '🔇';
+    else if(val < 0.4) icon.textContent = '🔉';
+    else icon.textContent = '🔊';
   }
 
   function spawnConfetti(){
