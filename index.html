@@ -218,6 +218,103 @@
     width:14px; height:14px; border-radius:50%; background:#ff6b9d; border:none; cursor:pointer;
   }
 
+  /* ── STORY TEXT ── */
+  .story-box {
+    max-width: 680px;
+    text-align: center;
+  }
+  .story-text {
+    font-size: clamp(.95rem, 2.4vw, 1.15rem);
+    line-height: 1.7;
+    color: #e4e2f5;
+    letter-spacing: .01em;
+  }
+  .story-note {
+    margin-top: 14px;
+    font-size: .85rem;
+    color: #ff8fab;
+    font-style: italic;
+    letter-spacing: .02em;
+  }
+
+  /* ── TIMELINE SECTION ── */
+  .timeline-title {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #f1f0ff;
+    margin-top: 6px;
+  }
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: min(440px, 100%);
+  }
+  .timeline-item {
+    background: #13131a;
+    border: 1.5px solid #2a2a3a;
+    border-left: 4px solid #ff6b9d;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color .25s, transform .2s;
+  }
+  .timeline-item:hover { border-color: #ff6b9d; transform: translateX(4px); }
+  .timeline-label {
+    font-size: .78rem;
+    color: #6b6b80;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .timeline-date {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f0abfc;
+  }
+
+  .timeline-footer {
+    font-size: .9rem;
+    color: #6b6b80;
+    text-align: center;
+    letter-spacing: .02em;
+    max-width: 400px;
+  }
+
+  /* ── SECOND LOCK (within finale) ── */
+  #lock-screen-2 {
+    display: none;
+    flex-direction: column; align-items: center; gap: 24px;
+    animation: fadeIn .5s ease;
+  }
+  #lock-screen-2.active { display: flex; }
+
+  /* ── FINALE 2 ── */
+  #finale2-screen {
+    min-height: 50vh;
+    justify-content: center;
+    gap: 18px;
+  }
+  .finale2-text {
+    font-size: clamp(1.2rem, 4.2vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    color: #f1f0ff;
+    max-width: 600px;
+  }
+  .finale2-foot {
+    font-size: .8rem;
+    color: #4a4a60;
+    letter-spacing: .03em;
+    text-align: center;
+    margin-top: 8px;
+  }
+
   /* confetti */
   .confetti-container { position:fixed;inset:0;pointer-events:none;z-index:99; }
   .piece { position:absolute;top:-10px;border-radius:2px;animation:fall linear forwards; }
@@ -309,9 +406,34 @@
 <audio id="bgMusic" src="muzyka.mp3" loop preload="auto"></audio>
 
 <div id="finale-screen" class="screen">
-  <div class="finale-emoji">✨</div>
-  <div class="finale-text">ciąg dalszy<br>nastąpi...</div>
-  <div class="finale-sub">zostań na bieżąco 😉</div>
+
+  <div class="story-box">
+    <div class="finale-emoji">✨</div>
+    <div class="story-text">
+      Poznaliśmy się na projekcie, na którym miało mnie nie być — ale jednak coś zdecydowało, że tam będę. Od tego czasu piszemy ze sobą, rozmawiamy oraz się spotykamy. Nikt nie wiedział, że właśnie wtedy zaczyna się nasza historia. Z czasem zwykłe wiadomości zmieniły się w codzienność.
+    </div>
+    <div class="story-note">dziękuję, że jesteś.</div>
+  </div>
+
+  <div class="timeline-title">ważne daty</div>
+  <div class="timeline-list">
+    <div class="timeline-item">
+      <span class="timeline-label">pierwsza rozmowa</span>
+      <span class="timeline-date">2024</span>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">pierwsze wyjście sam na sam</span>
+      <span class="timeline-date">29 kwietnia 2025</span>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-label">rocznica naszego poznania</span>
+      <span class="timeline-date">14 maj</span>
+    </div>
+  </div>
+
+  <div class="timeline-footer">niech nasza historia dalej się tworzy, dzień w dzień</div>
+
+  <button class="heart-btn show" onclick="openLock2()">dalej →</button>
 
   <div class="music-player">
     <button class="music-play-btn" id="playBtn" onclick="toggleMusic()">▶️</button>
@@ -324,6 +446,25 @@
       <input type="range" class="vol-slider" id="volSlider" min="0" max="1" step="0.01" value="0.6" oninput="setVolume(this.value)" />
     </div>
   </div>
+
+  <!-- SECOND LOCK -->
+  <div id="lock-screen-2">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Podaj hasło, żeby zobaczyć</div>
+    <div class="input-wrap">
+      <input id="pwd2" type="text" placeholder="hasło..." autocomplete="off" />
+    </div>
+    <button class="btn" onclick="checkPwd2()">Odblokuj</button>
+    <div class="error-msg" id="err2"></div>
+  </div>
+
+</div>
+
+<!-- FINALE 2 SCREEN -->
+<div id="finale2-screen" class="screen">
+  <div class="finale-emoji">❤️</div>
+  <div class="finale2-text">ten dzień był niesamowity i pamiętaj — nigdy cię nie oleje ❤️ zaufaj mi.</div>
+  <div class="finale2-foot">będzie tu więcej rzeczy w przyszłości</div>
 </div>
 
 <div class="confetti-container" id="confetti"></div>
@@ -359,6 +500,30 @@
       err.textContent = 'Złe hasło! Spróbuj jeszcze raz 🙃';
       document.getElementById('pwd').value = '';
       document.getElementById('pwd').focus();
+    }
+  }
+
+  function openLock2(){
+    document.getElementById('lock-screen-2').classList.add('active');
+    document.getElementById('lock-screen-2').scrollIntoView({ behavior:'smooth', block:'center' });
+    const p2 = document.getElementById('pwd2');
+    p2.focus();
+    p2.addEventListener('keydown', e => { if(e.key==='Enter') checkPwd2(); });
+  }
+
+  function checkPwd2(){
+    const val = document.getElementById('pwd2').value.trim().toLowerCase();
+    const err = document.getElementById('err2');
+    if(val === '29 czerwiec'){
+      showScreen('finale2-screen');
+      spawnConfetti();
+    } else {
+      err.classList.remove('shake');
+      void err.offsetWidth;
+      err.classList.add('shake');
+      err.textContent = 'Złe hasło! Spróbuj jeszcze raz 🙃';
+      document.getElementById('pwd2').value = '';
+      document.getElementById('pwd2').focus();
     }
   }
 
