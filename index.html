@@ -62,8 +62,8 @@
   /* ── SCREENS ── */
   .screen {
     display:none; position:relative; z-index:1;
-    flex-direction:column; align-items:center; gap:32px;
-    width:min(860px,100%);
+    flex-direction:column; align-items:center; gap:28px;
+    width:min(600px,100%);
   }
   .screen.active { display:flex; animation: fadeIn .6s ease; }
 
@@ -78,19 +78,19 @@
   .cards-grid {
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:18px; width:100%;
-    max-width: 600px;
+    gap:16px;
+    width: min(560px, 100%);
   }
-  @media(max-width:580px){ .cards-grid { gap:12px; } }
 
   .card-wrap {
     aspect-ratio:3/4; position:relative; cursor:pointer;
   }
   .card-wrap.big {
     aspect-ratio: unset;
-    width: 280px;
-    height: 370px;
+    width: 275px;
+    height: 366px;
     margin: 0 auto;
+    flex-shrink: 0;
   }
   .card-box {
     position:absolute; inset:0;
@@ -379,7 +379,7 @@
       <div class="card-box"><div class="qmark">❓</div><div class="hint">kliknij</div></div>
       <div class="card-reveal">
         <img src="zdj 4.png" alt="" />
-        <div class="caption">Tu jesteś na planie filmu "The office Radom"</div>
+        <div class="caption">Tu jesteś na planie filmu "The office Radom</div>
       </div>
     </div>
 
